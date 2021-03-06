@@ -1,0 +1,6 @@
+./dataset/text/*
+./japanese-bert/*
+./vocab_file/*
+.DS_Store
+.idea/*
+./__pycache__/*
