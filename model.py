@@ -2,35 +2,38 @@
 Model classes
 '''
 import torch
+import pdb
 import torch.nn as nn
 from allennlp.modules.seq2vec_encoders import Seq2VecEncoder, PytorchSeq2VecWrapper
 from allennlp.models import Model
 from overrides import overrides
 from allennlp.training.metrics import CategoricalAccuracy, BooleanAccuracy
+from torch.nn.functional import softmax
 
 class TitleAndCaptionClassifier(Model):
     def __init__(self, args,
                  mention_encoder: Seq2VecEncoder,
+                 num_label: int,
                  vocab):
         super().__init__(vocab)
         self.args = args
         self.mention_encoder = mention_encoder
         self.accuracy = BooleanAccuracy()
         self.BCEWloss = nn.BCEWithLogitsLoss()
-        self.mesloss = nn.MSELoss()
-        self.istrainflag = 1
-        self.cos = nn.CosineSimilarity(dim=1, eps=1e-6)
-        self.linear_for_classify = nn.Linear(self.mention_encoder.get_output_dim(), 1)
+        self.accuracy = CategoricalAccuracy()
+        self.loss = nn.CrossEntropyLoss()
+        self.linear_for_classify = nn.Linear(self.mention_encoder.get_output_dim(), num_label)
 
     def forward(self, context, label):
         scores = self.linear_for_classify(self.mention_encoder(context))
-
-        loss = self.BCEWloss(scores.view(-1), label.float())
+        probs = softmax(scores, dim=1)
+        loss = self.loss(probs, label.long())
         output = {'loss': loss}
+        output['logits'] = scores
+        output['probs'] = probs
 
-        if self.istrainflag:
-            binary_class = (torch.sigmoid(scores.view(-1)) > 0.5).int()
-            self.accuracy(binary_class, label)
+        self.accuracy(probs, label)
+
         return output
 
     @overrides

@@ -15,16 +15,14 @@ if __name__ == '__main__':
     train, dev, test = dsr._read('train'), dsr._read('dev'), dsr._read('test')
     train_and_dev = train + dev
     vocab = build_vocab(train_and_dev)
-
+    num_label = len(dsr.class2id)
     train_loader, dev_loader, test_loader = build_data_loaders(config, train, dev, test)
     train_loader.index_with(vocab)
     dev_loader.index_with(vocab)
 
     _, __, embedder = emb_returner(config=config)
     mention_encoder = Pooler_for_mention(config, embedder)
-
-    model = TitleAndCaptionClassifier(config, mention_encoder, vocab)
-
+    model = TitleAndCaptionClassifier(config, mention_encoder, num_label, vocab)
     trainer = build_trainer(config, model, train_loader, dev_loader)
     trainer.train()
 
