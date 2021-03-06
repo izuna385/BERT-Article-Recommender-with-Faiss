@@ -48,6 +48,9 @@ class LivedoorCorpusReader(DatasetReader):
         elif train_dev_test_flag == 'test':
             mention_ids += self.test_mention_ids
 
+        if self.config.debug:
+            mention_ids = mention_ids[:50]
+
         for idx, mention_uniq_id in tqdm(enumerate(mention_ids)):
             instances.append(self.text_to_instance(mention_uniq_id, data=self.mention_id2data[mention_uniq_id]))
 
@@ -62,13 +65,13 @@ class LivedoorCorpusReader(DatasetReader):
         title_tokenized += [Token('[SEP]')]
 
         context_field = TextField(title_tokenized, self.token_indexers)
-        fields = {"l": context_field}
+        fields = {"context": context_field}
 
         if data['class'] not in self.class2id:
             self.class2id.update({data['class']: len(self.class2id)})
 
         fields['label'] = ArrayField(np.array(self.class2id[data['class']]))
-        fields['mention_uniq_id'] = ArrayField(np.array(mention_uniq_id))
+        # fields['mention_uniq_id'] = ArrayField(np.array(mention_uniq_id))
 
         return Instance(fields)
 
