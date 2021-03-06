@@ -27,8 +27,7 @@ if __name__ == '__main__':
     trainer.train()
 
     model.eval()
-    vocab_test = build_vocab(test)
-    test_loader.index_with(vocab_test)
+    test_loader.index_with(model.vocab)
     eval_result = evaluate(model=model,
                            data_loader=test_loader,
                            cuda_device=0,

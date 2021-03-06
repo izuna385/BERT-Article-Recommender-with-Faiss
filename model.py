@@ -23,30 +23,18 @@ class TitleAndCaptionClassifier(Model):
         self.accuracy = CategoricalAccuracy()
         self.loss = nn.CrossEntropyLoss()
         self.linear_for_classify = nn.Linear(self.mention_encoder.get_output_dim(), num_label)
-        hidden1_dim = self.mention_encoder.get_output_dim() // 2
-        hidden2_dim = hidden1_dim // 2
-        hidden3_dim = hidden2_dim // 2
-        self.fc = nn.Sequential(
-            nn.Linear(self.mention_encoder.get_output_dim(), hidden1_dim),
-            nn.ReLU(),
-            nn.Dropout(),
-            nn.Linear(hidden1_dim, hidden2_dim),
-            nn.ReLU(),
-            nn.Dropout(),
-            nn.Linear(hidden2_dim, hidden3_dim),
-            nn.ReLU(),
-            nn.Dropout(),
-            nn.Linear(hidden3_dim, num_label))
 
     def forward(self, context, label):
-
-        scores = self.linear_for_classify(self.mention_encoder(context))
+        emb = self.mention_encoder(context)
+        scores = self.linear_for_classify(emb)
         probs = softmax(scores, dim=1)
         loss = self.loss(scores, label)
         output = {'loss': loss}
         output['logits'] = scores
         output['probs'] = probs
         self.accuracy(probs, label)
+
+        output['encoded_embeddings'] = emb
 
         return output
 
