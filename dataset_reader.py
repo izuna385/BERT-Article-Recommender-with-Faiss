@@ -54,12 +54,11 @@ class LivedoorCorpusReader(DatasetReader):
 
     @overrides
     def text_to_instance(self, data=None) -> Instance:
-        title_tokenized = [Token('[CLS]')]
-        title_tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(txt=data['title'])][:self.config.max_title_length]
-        title_tokenized.append(Token('[unused1]'))
-        title_tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(txt=data['caption'])][:self.config.max_caption_length]
-        title_tokenized += [Token('[SEP]')]
-        context_field = TextField(title_tokenized, self.token_indexers)
+        tokenized = [Token('[CLS]')]+[Token(split_token) for split_token in
+                                      self.custom_tokenizer_class.tokenize(
+                                          txt=data['title']+data['caption'])][:self.config.max_token_length] + \
+                    [Token('[SEP]')]
+        context_field = TextField(tokenized, self.token_indexers)
         fields = {"context": context_field}
 
         fields['label'] = LabelField(data['class'])
@@ -80,7 +79,6 @@ class LivedoorCorpusReader(DatasetReader):
                 self.class2id.update({label_class: len(self.class2id)})
 
             file_paths = self._each_class_dir_path2_txt_paths(each_class_dir_path)
-            random.shuffle(file_paths)
             # train : dev : test = 7 : 1 : 2
             data_num_in_one_label = len(file_paths)
             data_frac = data_num_in_one_label // 10
@@ -102,6 +100,7 @@ class LivedoorCorpusReader(DatasetReader):
                 else:
                     print('Error')
                     exit()
+
         return train_mention_ids, dev_mention_ids, test_mention_ids, mention_id2data
 
     def _each_class_dir_path2_txt_paths(self, each_class_dir_path):
@@ -116,7 +115,7 @@ class LivedoorCorpusReader(DatasetReader):
             for idx, line in enumerate(f):
                 if idx == 2:
                     data.update({'title': line.strip()})
-                if idx > 2 and line.strip() != '':
+                if idx > 2 and idx < 10 and line.strip() != '':
                     caption += line.strip()
 
         data.update({'caption': caption})

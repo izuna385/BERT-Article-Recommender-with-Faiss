@@ -21,10 +21,7 @@ class CustomTokenizer:
 
     def token_indexer_returner(self):
         huggingface_name, do_lower_case = self.huggingfacename_returner()
-        return {'tokens': PretrainedTransformerIndexer(
-            model_name=huggingface_name,
-            # do_lowercase=do_lower_case
-        )
+        return {'tokens': PretrainedTransformerIndexer('cl-tohoku/bert-base-japanese')
         }
 
     def bert_tokenizer_returner(self):
@@ -38,21 +35,7 @@ class CustomTokenizer:
 
 
     def tokenize(self, txt):
-        original_tokens = txt.split(' ')
-        new_tokens = list()
-
-        for token in original_tokens:
-            split_to_subwords = self.bert_tokenizer.tokenize(token)  # token is oneword, split_tokens
-            if ['[CLS]'] in split_to_subwords:
-                split_to_subwords.remove('[CLS]')
-            if ['[SEP]'] in split_to_subwords:
-                split_to_subwords.remove('[SEP]')
-            if split_to_subwords == []:
-                new_tokens.append('[UNK]')
-            else:
-                new_tokens += split_to_subwords
-
-        return new_tokens
+        return self.bert_tokenizer.tokenize(txt)
 
     def bert_model_and_vocab_downloader(self):
         if not os.path.exists('./japanese-bert/'):

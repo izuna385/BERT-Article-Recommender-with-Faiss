@@ -39,7 +39,7 @@ def build_trainer(
     dev_loader: DataLoader,
 ) -> Trainer:
     parameters = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
-    optimizer = AdamOptimizer(parameters)  # type: ignore
+    optimizer = AdamOptimizer(parameters, lr=config.lr)  # type: ignore
     model.cuda()
     trainer = GradientDescentTrainer(
         model=model,
@@ -58,5 +58,5 @@ def emb_returner(config):
         huggingface_model = 'dummy'
         print(config.bert_name,'are not supported')
         exit()
-    bert_embedder = PretrainedTransformerEmbedder(model_name=huggingface_model)
+    bert_embedder = PretrainedTransformerEmbedder(model_name="cl-tohoku/bert-base-japanese")
     return bert_embedder, bert_embedder.get_output_dim(), BasicTextFieldEmbedder({'tokens': bert_embedder})
