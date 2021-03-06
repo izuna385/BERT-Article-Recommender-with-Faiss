@@ -24,19 +24,22 @@ class TitleAndCaptionClassifier(Model):
         self.loss = nn.CrossEntropyLoss()
         self.linear_for_classify = nn.Linear(self.mention_encoder.get_output_dim(), num_label)
 
-    def forward(self, context, label, mention_uniq_id):
+    def forward(self, context,
+                mention_uniq_id: torch.Tensor = None,
+                label: torch.Tensor = None):
         emb = self.mention_encoder(context)
         scores = self.linear_for_classify(emb)
         probs = softmax(scores, dim=1)
-        loss = self.loss(scores, label)
-        output = {'loss': loss}
-        output['logits'] = scores
-        output['probs'] = probs
-        self.accuracy(probs, label)
+        output = {}
+        if label is not None:
+            loss = self.loss(scores, label)
+            self.accuracy(probs, label)
+            output['loss'] = loss
+            output['logits'] = scores
+            output['probs'] = probs
+            output['mention_uniq_id'] = mention_uniq_id
 
         output['encoded_embeddings'] = emb
-        output['mention_uniq_id'] = mention_uniq_id
-
         return output
 
     @overrides

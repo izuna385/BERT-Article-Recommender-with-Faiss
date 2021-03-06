@@ -55,18 +55,26 @@ class LivedoorCorpusReader(DatasetReader):
 
     @overrides
     def text_to_instance(self, mention_uniq_id, data=None) -> Instance:
-        tokenized = [Token('[CLS]')]
-        tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
-                                          txt=data['title'])][:self.config.max_title_length]
-        tokenized += [Token('[unused0]')]
-        tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
-                                          txt=data['caption'])][:self.config.max_caption_length]
-        tokenized += [Token('[SEP]')]
-        context_field = TextField(tokenized, self.token_indexers)
-        fields = {"context": context_field}
+        if mention_uniq_id == None:
+            tokenized = [Token('[CLS]')]
+            tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
+                                              txt=data['title'])][:self.config.max_title_length]
+            tokenized += [Token('[SEP]')]
+            context_field = TextField(tokenized, self.token_indexers)
+            fields = {"context": context_field}
+        else:
+            tokenized = [Token('[CLS]')]
+            tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
+                                              txt=data['title'])][:self.config.max_title_length]
+            tokenized += [Token('[unused0]')]
+            tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
+                                              txt=data['caption'])][:self.config.max_caption_length]
+            tokenized += [Token('[SEP]')]
+            context_field = TextField(tokenized, self.token_indexers)
+            fields = {"context": context_field}
 
-        fields['label'] = LabelField(data['class'])
-        fields['mention_uniq_id'] = ArrayField(np.array(mention_uniq_id))
+            fields['label'] = LabelField(data['class'])
+            fields['mention_uniq_id'] = ArrayField(np.array(mention_uniq_id))
 
         return Instance(fields)
 
@@ -75,8 +83,6 @@ class LivedoorCorpusReader(DatasetReader):
         mention_id2data = {}
         train_mention_ids, dev_mention_ids, test_mention_ids = [], [], []
         dataset_each_class_dirs_path = glob.glob(self.config.dataset_dir+'**/')
-        if self.config.debug:
-            dataset_each_class_dirs_path = dataset_each_class_dirs_path[:3]
 
         for each_class_dir_path in dataset_each_class_dirs_path:
             label_class = re.search(r'(.+)\/', each_class_dir_path.replace(self.config.dataset_dir,'')).group(1)
@@ -86,6 +92,8 @@ class LivedoorCorpusReader(DatasetReader):
             file_paths = self._each_class_dir_path2_txt_paths(each_class_dir_path)
             # train : dev : test = 7 : 1 : 2
             data_num_in_one_label = len(file_paths)
+            if self.config.debug:
+                data_num_in_one_label = data_num_in_one_label // 8
             data_frac = data_num_in_one_label // 10
             train_tmp_ids = [i for i in range(0, data_frac * 7)]
             dev_tmp_ids = [j for j in range(data_frac * 7, data_frac * 8)]
@@ -103,8 +111,11 @@ class LivedoorCorpusReader(DatasetReader):
                 elif idx in test_tmp_ids:
                     test_mention_ids.append(tmp_idx_for_all_data)
                 else:
-                    print('Error')
-                    exit()
+                    if self.config.debug:
+                        continue
+                    else:
+                        print('Error')
+                        exit()
 
         return train_mention_ids, dev_mention_ids, test_mention_ids, mention_id2data
 

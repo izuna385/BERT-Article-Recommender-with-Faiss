@@ -5,6 +5,7 @@ from utils import build_vocab, build_data_loaders, build_trainer, emb_returner
 from encoder import Pooler_for_mention
 from model import TitleAndCaptionClassifier
 from allennlp.training.util import evaluate
+from emb_dumper import EmbeddingEncoder
 
 if __name__ == '__main__':
     params = Params()
@@ -33,3 +34,6 @@ if __name__ == '__main__':
                            cuda_device=0,
                            batch_weight_key="")
     print(eval_result)
+
+    embedding_encoder = EmbeddingEncoder(model, dsr)
+    res = embedding_encoder.predict('test emb')
