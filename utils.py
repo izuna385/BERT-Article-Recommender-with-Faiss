@@ -47,7 +47,8 @@ def build_trainer(
         validation_data_loader=dev_loader,
         num_epochs=config.num_epochs,
         optimizer=optimizer,
-        cuda_device=0
+        cuda_device=0,
+        serialization_dir=config.serialization_dir
     )
     return trainer
 

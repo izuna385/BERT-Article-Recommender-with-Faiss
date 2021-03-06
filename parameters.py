@@ -7,6 +7,7 @@ class Params:
         parser = argparse.ArgumentParser(description='NED')
         parser.add_argument('-debug', action='store', default=False, type=strtobool)
         parser.add_argument('-dataset_dir', action="store", default="./dataset/text/", type=str)
+        parser.add_argument('-serialization_dir', action="store", default="./serialization_dir/", type=str)
         parser.add_argument('-bert-name', action="store", default="japanese-bert", type=str)
 
         parser.add_argument('-lr', action="store", default=1e-5, type=float)
@@ -24,7 +25,7 @@ class Params:
         parser.add_argument('-debug_sample_num', action="store", default=2000, type=int)
         parser.add_argument('-max_title_length', action="store", default=20, type=int)
         parser.add_argument('-max_caption_length', action="store", default=50, type=int)
-        parser.add_argument('-max_token_length', action="store", default=256, type=int)
+        parser.add_argument('-max_token_length', action="store", default=128, type=int)
 
         self.opts = parser.parse_args(sys.argv[1:])
         print('\n===PARAMETERS===')
