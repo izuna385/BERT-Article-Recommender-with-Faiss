@@ -24,7 +24,7 @@ class TitleAndCaptionClassifier(Model):
         self.loss = nn.CrossEntropyLoss()
         self.linear_for_classify = nn.Linear(self.mention_encoder.get_output_dim(), num_label)
 
-    def forward(self, context, label):
+    def forward(self, context, label, mention_uniq_id):
         emb = self.mention_encoder(context)
         scores = self.linear_for_classify(emb)
         probs = softmax(scores, dim=1)
@@ -35,6 +35,7 @@ class TitleAndCaptionClassifier(Model):
         self.accuracy(probs, label)
 
         output['encoded_embeddings'] = emb
+        output['mention_uniq_id'] = mention_uniq_id
 
         return output
 
