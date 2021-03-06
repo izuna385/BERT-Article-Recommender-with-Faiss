@@ -54,10 +54,13 @@ class LivedoorCorpusReader(DatasetReader):
 
     @overrides
     def text_to_instance(self, data=None) -> Instance:
-        tokenized = [Token('[CLS]')]+[Token(split_token) for split_token in
-                                      self.custom_tokenizer_class.tokenize(
-                                          txt=data['title']+data['caption'])][:self.config.max_token_length] + \
-                    [Token('[SEP]')]
+        tokenized = [Token('[CLS]')]
+        tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
+                                          txt=data['title'])][:self.config.max_title_length]
+        tokenized += [Token('[unused0]')]
+        tokenized += [Token(split_token) for split_token in self.custom_tokenizer_class.tokenize(
+                                          txt=data['caption'])][:self.config.max_caption_length]
+        tokenized += [Token('[SEP]')]
         context_field = TextField(tokenized, self.token_indexers)
         fields = {"context": context_field}
 
