@@ -19,3 +19,10 @@ $ `python3 main.py -num_epochs 10`
 
 # 記事
 [https://qiita.com/izuna385/items/a004982f76256cab1b2d](https://qiita.com/izuna385/items/a004982f76256cab1b2d)
+
+# その他
+* faiss関連でエラーが起こる場合、faissを一度削除して以下を試して下さい。
+   
+   `pip install faiss-cpu --no-cache`
+   
+   (参考記事：https://github.com/facebookresearch/faiss/issues/821#issuecomment-573531694)

@@ -55,7 +55,7 @@ class ArticleKB:
         for mention_id in tqdm(self.train_mention_ids + self.dev_mention_ids):
             its_article_title_emb = self.predictor.predict(
                 self.mention_id2data[mention_id]['title']
-            )
+            )['encoded_embeddings']
             mention_id2emb.update({mention_id: its_article_title_emb})
 
         return mention_id2emb

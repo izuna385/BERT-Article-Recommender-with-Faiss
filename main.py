@@ -6,6 +6,7 @@ from encoder import Pooler_for_mention
 from model import TitleAndCaptionClassifier
 from allennlp.training.util import evaluate
 from emb_dumper import EmbeddingEncoder, ArticleKB
+from kbloader import ArticleTitleIndexerWithFaiss
 
 if __name__ == '__main__':
     params = Params()
@@ -38,6 +39,12 @@ if __name__ == '__main__':
 
     # Dump train and dev document to article embeddings
     embedding_encoder = EmbeddingEncoder(model, dsr)
-
     emb_dumper = ArticleKB(model=model, dsr=dsr, config=config)
-    mention_idx2emb = emb_dumper.article_emb_iterator_from_train_and_dev_dataset()
+    mention_idx2emb = emb_dumper.mention_idx2emb
+
+    # load kb
+    article_kb_class = ArticleTitleIndexerWithFaiss(
+        config=config, mention_idx2emb=mention_idx2emb, dsr=dsr, kbemb_dim=768
+    )
+
+    article_kb_class.search_with_emb(emb=emb_dumper.predictor('テストテキスト'))

@@ -28,6 +28,9 @@ class Params:
         parser.add_argument('-max_caption_length', action="store", default=70, type=int)
         parser.add_argument('-max_token_length', action="store", default=128, type=int)
 
+        parser.add_argument('-search_method_for_faiss', action="store", default='indexflatl2', type=str)
+        parser.add_argument('-how_many_top_hits_preserved', action="store", default=5, type=int)
+
         self.opts = parser.parse_args(sys.argv[1:])
         print('\n===PARAMETERS===')
         for arg in vars(self.opts):
