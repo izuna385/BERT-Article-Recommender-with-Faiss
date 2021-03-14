@@ -23,7 +23,11 @@ $ python3 main.py -num_epochs 10
 $ uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
 
-# 記事
+# 記事推薦モデルの構成
+
+![test](./img/recommend.png)
+
+# 参考
 [https://qiita.com/izuna385/items/a004982f76256cab1b2d](https://qiita.com/izuna385/items/a004982f76256cab1b2d)
 
 # その他
