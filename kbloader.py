@@ -1,6 +1,5 @@
 import faiss
 import numpy as np
-import pdb
 
 class ArticleTitleIndexerWithFaiss:
     def __init__(self, config, mention_idx2emb, dsr, kbemb_dim=768):

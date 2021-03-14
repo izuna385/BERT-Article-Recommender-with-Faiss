@@ -6,12 +6,12 @@ from main import main
 app = FastAPI()
 article_kb_class, emb_dumper = main()
 
+class Article(BaseModel):
+    title: str
+
 @app.get("/hello")
 def hello():
    return {"Hello": "World!"}
-
-class Article(BaseModel):
-    title: str
 
 @app.post("/request/")
 async def predict_nearest_title(article: Article):

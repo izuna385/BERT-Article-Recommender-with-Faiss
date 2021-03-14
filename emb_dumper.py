@@ -1,5 +1,3 @@
-from typing import Dict, Iterable, List, Tuple
-from allennlp.modules.token_embedders import PretrainedTransformerEmbedder
 import pickle
 from allennlp.data import (
     DataLoader,
@@ -8,13 +6,8 @@ from allennlp.data import (
     Vocabulary,
     TextFieldTensors,
 )
-from allennlp.data.data_loaders import SimpleDataLoader
-from allennlp.models import Model
-from allennlp.modules.text_field_embedders import BasicTextFieldEmbedder
-import pdb
 from allennlp.predictors import Predictor
 from allennlp.common.util import JsonDict
-from allennlp.data.samplers import BucketBatchSampler
 from tqdm import tqdm
 import os
 

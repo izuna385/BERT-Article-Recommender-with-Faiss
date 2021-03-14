@@ -50,7 +50,7 @@ def main():
     )
     top_titles = article_kb_class.search_with_emb(
         emb=emb_dumper.predictor.predict('iPhoneとパソコン')['encoded_embeddings'])
-
+    print(top_titles)
     return article_kb_class, emb_dumper
 
 if __name__ == '__main__':
