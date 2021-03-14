@@ -1,6 +1,6 @@
 from typing import Dict, Iterable, List, Tuple
 from allennlp.modules.token_embedders import PretrainedTransformerEmbedder
-
+import pickle
 from allennlp.data import (
     DataLoader,
     DatasetReader,
@@ -15,6 +15,8 @@ import pdb
 from allennlp.predictors import Predictor
 from allennlp.common.util import JsonDict
 from allennlp.data.samplers import BucketBatchSampler
+from tqdm import tqdm
+import os
 
 class EmbeddingEncoder(Predictor):
     def predict(self, sentence: str) -> JsonDict:
@@ -25,4 +27,40 @@ class EmbeddingEncoder(Predictor):
         context = json_dict["context"]
         return self._dataset_reader.text_to_instance(mention_uniq_id=None,
                                                      data={'title': context})
+
+class ArticleKB:
+    def __init__(self, model, dsr, config):
+        self.predictor = EmbeddingEncoder(model, dsr)
+        self.dsr = dsr
+        self.train_mention_ids, self.dev_mention_ids, self.mention_id2data = \
+            dsr.train_mention_ids, dsr.dev_mention_ids, dsr.mention_id2data
+        self.config = config
+
+        self._dump_dir_maker()
+        if not os.path.exists(self.config.dump_emb_dir+'kbemb.pkl'):
+            mention_idx2emb = self._article_emb_iterator_from_train_and_dev_dataset()
+            with open(self.config.dump_emb_dir+'kbemb.pkl', 'wb') as f:
+                pickle.dump(mention_idx2emb, f)
+            self.mention_idx2emb = mention_idx2emb
+        else:
+            with open(self.config.dump_emb_dir+'kbemb.pkl', 'rb') as g:
+                self.mention_idx2emb = pickle.load(g)
+
+
+    def _article_emb_iterator_from_train_and_dev_dataset(self):
+        print('=== emb making from train and dev')
+
+        mention_id2emb = {}
+
+        for mention_id in tqdm(self.train_mention_ids + self.dev_mention_ids):
+            its_article_title_emb = self.predictor.predict(
+                self.mention_id2data[mention_id]['title']
+            )
+            mention_id2emb.update({mention_id: its_article_title_emb})
+
+        return mention_id2emb
+
+    def _dump_dir_maker(self):
+        if not os.path.exists(self.config.dump_emb_dir):
+            os.mkdir(self.config.dump_emb_dir)
 

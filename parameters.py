@@ -8,6 +8,7 @@ class Params:
         parser.add_argument('-debug', action='store', default=False, type=strtobool)
         parser.add_argument('-dataset_dir', action="store", default="./dataset/text/", type=str)
         parser.add_argument('-serialization_dir', action="store", default="./serialization_dir/", type=str)
+        parser.add_argument('-dump_emb_dir', action="store", default="./dump_emb_dir/", type=str)
         parser.add_argument('-bert-name', action="store", default="japanese-bert", type=str)
 
         parser.add_argument('-lr', action="store", default=1e-5, type=float)
