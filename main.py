@@ -10,7 +10,7 @@ from allennlp.training.util import evaluate
 from emb_dumper import EmbeddingEncoder, ArticleKB
 from kbloader import ArticleTitleIndexerWithFaiss
 
-if __name__ == '__main__':
+def main():
     params = Params()
     config = params.opts
     dsr = LivedoorCorpusReader(config=config)
@@ -48,4 +48,10 @@ if __name__ == '__main__':
     article_kb_class = ArticleTitleIndexerWithFaiss(
         config=config, mention_idx2emb=mention_idx2emb, dsr=dsr, kbemb_dim=768
     )
-    article_kb_class.search_with_emb(emb=emb_dumper.predictor.predict('iPhoneとパソコン')['encoded_embeddings'])
+    top_titles = article_kb_class.search_with_emb(
+        emb=emb_dumper.predictor.predict('iPhoneとパソコン')['encoded_embeddings'])
+
+    return article_kb_class, emb_dumper
+
+if __name__ == '__main__':
+    main()

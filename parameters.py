@@ -1,6 +1,7 @@
 import argparse
 import sys, json
 from distutils.util import strtobool
+import pdb
 
 class Params:
     def __init__(self):
@@ -31,9 +32,10 @@ class Params:
         parser.add_argument('-search_method_for_faiss', action="store", default='indexflatl2', type=str)
         parser.add_argument('-how_many_top_hits_preserved', action="store", default=5, type=int)
 
-        self.opts = parser.parse_args(sys.argv[1:])
+        self.all_opts = parser.parse_known_args(sys.argv[1:])
+        self.opts = self.all_opts[0]
         print('\n===PARAMETERS===')
-        for arg in vars(self.opts):
+        for arg in vars(self.all_opts[0]):
             print(arg, getattr(self.opts, arg))
         print('===PARAMETERS END===\n')
 

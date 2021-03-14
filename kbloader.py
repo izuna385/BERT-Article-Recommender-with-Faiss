@@ -49,9 +49,9 @@ class ArticleTitleIndexerWithFaiss:
             np.array([emb]).astype('float32'),
             self.config.how_many_top_hits_preserved)
         top_titles = []
-        for kb_idx in faiss_search_candidate_result_kb_idxs:
+        for kb_idx in faiss_search_candidate_result_kb_idxs[0]:
             mention_idx = self.kb_idx2mention_idx[kb_idx]
             candidate_title = self.dsr.mention_id2data[mention_idx]['title']
             top_titles.append(candidate_title)
 
-        pdb.set_trace()
+        return top_titles

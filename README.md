@@ -17,6 +17,12 @@ $ `python3 main.py -num_epochs 10`
 
 * 特にパラメータ調整は行っていない。dev acc. ~85%, test acc. ~83%.
 
+# 記事推薦モデルの立ち上げ
+```
+$ python3 main.py -num_epochs 10
+$ uvicorn api:app --reload --host 0.0.0.0 --port 8000
+```
+
 # 記事
 [https://qiita.com/izuna385/items/a004982f76256cab1b2d](https://qiita.com/izuna385/items/a004982f76256cab1b2d)
 
