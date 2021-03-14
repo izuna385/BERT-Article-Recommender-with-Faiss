@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from dataset_reader import LivedoorCorpusReader
 from parameters import Params
 import pdb
@@ -46,5 +48,4 @@ if __name__ == '__main__':
     article_kb_class = ArticleTitleIndexerWithFaiss(
         config=config, mention_idx2emb=mention_idx2emb, dsr=dsr, kbemb_dim=768
     )
-
-    article_kb_class.search_with_emb(emb=emb_dumper.predictor('テストテキスト'))
+    article_kb_class.search_with_emb(emb=emb_dumper.predictor.predict('iPhoneとパソコン')['encoded_embeddings'])
